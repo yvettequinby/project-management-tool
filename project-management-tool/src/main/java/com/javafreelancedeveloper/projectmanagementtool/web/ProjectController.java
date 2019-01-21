@@ -1,16 +1,13 @@
 package com.javafreelancedeveloper.projectmanagementtool.web;
 
-import com.javafreelancedeveloper.projectmanagementtool.dto.CreateProjectRequest;
-import com.javafreelancedeveloper.projectmanagementtool.dto.CreateProjectResponse;
+import com.javafreelancedeveloper.projectmanagementtool.dto.CreateProjectResponseDTO;
+import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
 import com.javafreelancedeveloper.projectmanagementtool.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -22,14 +19,20 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<CreateProjectResponse> createNewProject(@Valid @RequestBody CreateProjectRequest createProjectRequest,
-                                                                  BindingResult bindingResult) {
+    public ResponseEntity<CreateProjectResponseDTO> createNewProject(@Valid @RequestBody ProjectDTO project,
+                                                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            CreateProjectResponse createProjectResponse = CreateProjectResponse.buildErrorResponse(bindingResult.getFieldErrors(), createProjectRequest);
+            CreateProjectResponseDTO createProjectResponse = CreateProjectResponseDTO.buildErrorResponse(bindingResult.getFieldErrors(), project);
             return new ResponseEntity<>(createProjectResponse, HttpStatus.BAD_REQUEST);
         } else {
-            CreateProjectResponse createProjectResponse = projectService.saveProject(createProjectRequest);
+            CreateProjectResponseDTO createProjectResponse = projectService.saveProject(project);
             return new ResponseEntity<>(createProjectResponse, HttpStatus.CREATED);
         }
+    }
+
+    @GetMapping("/{projectIdentifier}")
+    public ResponseEntity<ProjectDTO> getProjectByProjectIdentifier(@PathVariable String projectIdentifier) {
+        ProjectDTO projectDTO = projectService.findByProjectIdentifier(projectIdentifier.toUpperCase());
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 }
