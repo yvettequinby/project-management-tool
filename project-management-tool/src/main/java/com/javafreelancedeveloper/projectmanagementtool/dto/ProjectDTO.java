@@ -12,20 +12,20 @@ import java.util.Date;
 @Builder
 public class ProjectDTO {
 
-    private Long projectId;
+    private Long id;
     @NotBlank(message = "Project Name is required")
-    private String projectName;
-    @NotBlank(message = "Project Identifier is required")
-    @Size(min = 4, max = 5, message = "Project Identifier must be 4 or 5 characters long.")
-    private String projectIdentifier;
+    private String name;
+    @NotBlank(message = "Project Code is required")
+    @Size(min = 4, max = 5, message = "Code must be 4 or 5 characters long.")
+    private String code;
     @NotBlank(message = "Project Description is required")
-    private String projectDescription;
+    private String description;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date projectStartDate;
+    private Date startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date projectEndDate;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSSZ")
-    private Date projectCreatedTimestamp;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSSZ")
-    private Date projectUpdatedTimestamp;
+    private Date endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSZ")
+    private Date createdTimestamp;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSZ")
+    private Date updatedTimestamp;
 }

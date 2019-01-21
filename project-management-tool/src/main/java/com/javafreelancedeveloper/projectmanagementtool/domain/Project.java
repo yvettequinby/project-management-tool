@@ -18,9 +18,9 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String projectName;
+    private String name;
     @Column(updatable = false, unique = true)
-    private String projectIdentifier;
+    private String code;
     private String description;
     private Date startDate;
     private Date endDate;

@@ -1,10 +1,10 @@
 package com.javafreelancedeveloper.projectmanagementtool.exception;
 
-public class ProjectIdentifierException extends FieldException {
+public class ProjectCodeException extends FieldException {
 
-    public static final String FIELD_NAME = "Project Identifier";
+    public static final String FIELD_NAME = "code";
 
-    public ProjectIdentifierException(String message) {
+    public ProjectCodeException(String message) {
         super(message);
     }
 

@@ -8,12 +8,12 @@ import java.util.List;
 
 @Getter
 @Builder
-public class CreateProjectResponseDTO extends AbstractValidationResponseDTO {
+public class SavedProjectResponseDTO extends AbstractValidationResponseDTO {
 
     private ProjectDTO project;
 
-    public static CreateProjectResponseDTO buildErrorResponse(List<FieldError> fieldErrors, ProjectDTO project) {
-        CreateProjectResponseDTO createProjectResponse = CreateProjectResponseDTO.builder()
+    public static SavedProjectResponseDTO buildErrorResponse(List<FieldError> fieldErrors, ProjectDTO project) {
+        SavedProjectResponseDTO createProjectResponse = SavedProjectResponseDTO.builder()
                 .project(project)
                 .build();
         createProjectResponse.addFieldErrors(fieldErrors);
