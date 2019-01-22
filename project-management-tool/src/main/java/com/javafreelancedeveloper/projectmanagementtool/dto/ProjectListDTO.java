@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class ProjectListDTO {
 
-    private final List<ProjectDTO> project;
+    private final List<ProjectDTO> projects;
 }
