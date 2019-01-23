@@ -1,6 +1,7 @@
 # project-management-tool
 This project is a fairly simple web-based project management tool. 
 It's a sample project to demonstrate a full-stack of technologies.
+
 There are two folders. 
 One contains the Spring Boot back-end.
 The other contains the React front-end client.
