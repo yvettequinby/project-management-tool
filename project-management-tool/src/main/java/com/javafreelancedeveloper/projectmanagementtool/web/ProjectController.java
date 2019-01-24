@@ -14,6 +14,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("api/project")
 @AllArgsConstructor
+@CrossOrigin
 public class ProjectController extends BaseController {
 
     private final ProjectService projectService;
