@@ -1,12 +1,11 @@
 package com.javafreelancedeveloper.projectmanagementtool.service;
 
 import com.javafreelancedeveloper.projectmanagementtool.domain.Project;
+import com.javafreelancedeveloper.projectmanagementtool.dto.FieldValidationErrorResponseDTO;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectListDTO;
-import com.javafreelancedeveloper.projectmanagementtool.dto.SavedProjectResponseDTO;
-import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectCodeException;
-import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectIdException;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectNotFoundException;
+import com.javafreelancedeveloper.projectmanagementtool.exception.ValidationException;
 import com.javafreelancedeveloper.projectmanagementtool.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,29 +22,26 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
-    public SavedProjectResponseDTO saveProject(ProjectDTO projectDTO) {
+    public ProjectDTO saveProject(ProjectDTO projectDTO) {
         Project project = toProject(projectDTO);
         try {
             project.setCode(project.getCode().toUpperCase());
             Project savedProject = projectRepository.save(project);
             ProjectDTO savedProjectDTO = toProjectDTO(savedProject);
-            SavedProjectResponseDTO savedProjectResponseDTO = SavedProjectResponseDTO.builder()
-                    .project(savedProjectDTO)
-                    .build();
-            return savedProjectResponseDTO;
+            return savedProjectDTO;
         } catch (DataIntegrityViolationException e) {
-            throw new ProjectCodeException("Project Code must be unique. A project with this code already exists.");
+            throw new ValidationException(new FieldValidationErrorResponseDTO("code", "Project Code must be unique. A project with this code already exists."));
         }
     }
 
-    public SavedProjectResponseDTO updateProject(ProjectDTO projectDTO) {
+    public ProjectDTO updateProject(ProjectDTO projectDTO) {
         if (projectDTO.getId() == null) {
-            throw new ProjectIdException("Project Id is required for updates.");
+            throw new ValidationException(new FieldValidationErrorResponseDTO("id", "Project Id is required for updates."));
         }
         Project project = projectRepository.findById(projectDTO.getId())
-                .orElseThrow(() -> new ProjectIdException("No existing project found for supplied Project Id. Cannot update."));
+                .orElseThrow(() -> new ValidationException(new FieldValidationErrorResponseDTO("id", "Could not retrieve existing record for provided Project Id.")));
         if (!project.getCode().equals(projectDTO.getCode())) {
-            throw new ProjectCodeException("Project Code does not match expected value. Invalid input.");
+            throw new ValidationException(new FieldValidationErrorResponseDTO("code", "Project Code is inconsistent with id. Invalid input."));
         }
         project.setName(projectDTO.getName());
         project.setDescription(projectDTO.getDescription());
@@ -53,10 +49,7 @@ public class ProjectService {
         project.setEndDate(projectDTO.getEndDate());
         Project savedProject = projectRepository.save(project);
         ProjectDTO savedProjectDTO = toProjectDTO(savedProject);
-        SavedProjectResponseDTO savedProjectResponseDTO = SavedProjectResponseDTO.builder()
-                .project(savedProjectDTO)
-                .build();
-        return savedProjectResponseDTO;
+        return savedProjectDTO;
     }
 
     public ProjectDTO findByProjectCode(String projectCode) {

@@ -3,7 +3,6 @@ package com.javafreelancedeveloper.projectmanagementtool.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectListDTO;
-import com.javafreelancedeveloper.projectmanagementtool.dto.SavedProjectResponseDTO;
 import com.javafreelancedeveloper.projectmanagementtool.service.ProjectService;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -57,23 +56,43 @@ public class ProjectControllerTest {
                 .createdTimestamp(new Date())
                 .updatedTimestamp(new Date())
                 .build();
-        SavedProjectResponseDTO savedProjectResponseDTO = SavedProjectResponseDTO.builder()
-                .project(savedProjectDTO)
-                .build();
-        when(projectService.saveProject(projectDTO)).thenReturn(savedProjectResponseDTO);
+        when(projectService.saveProject(projectDTO)).thenReturn(savedProjectDTO);
 
         mockMvc.perform(post("/api/project")
                 .content(jsonBody)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.project.code", equalTo(projectDTO.getCode())))
-                .andExpect(jsonPath("$.project.name", equalTo(projectDTO.getName())))
-                .andExpect(jsonPath("$.project.description", equalTo(projectDTO.getDescription())))
-                .andExpect(jsonPath("$.project.id", notNullValue()))
+                .andExpect(jsonPath("$.code", equalTo(projectDTO.getCode())))
+                .andExpect(jsonPath("$.name", equalTo(projectDTO.getName())))
+                .andExpect(jsonPath("$.description", equalTo(projectDTO.getDescription())))
+                .andExpect(jsonPath("$.id", notNullValue()))
                 .andReturn();
 
         verify(projectService).saveProject(projectDTO);
+    }
+
+
+    @Test
+    public void testCreateProject_validationErrors() throws Exception {
+
+        ProjectDTO projectDTO = ProjectDTO.builder()
+                .description("A Test Project 1")
+                .code("OHNONONO")
+                .name("")
+                .build();
+        String jsonBody = objectMapper.writeValueAsString(projectDTO);
+
+        mockMvc.perform(post("/api/project")
+                .content(jsonBody)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrorMap.code[0]", equalTo("Project Code must be 4 or 5 characters long.")))
+                .andExpect(jsonPath("$.validationErrorMap.name[0]", equalTo("Project Name is required")))
+                .andExpect(jsonPath("$.hasValidationErrors", equalTo(true)))
+                .andReturn();
+
     }
 
 
@@ -96,20 +115,17 @@ public class ProjectControllerTest {
                 .createdTimestamp(new Date())
                 .updatedTimestamp(new Date())
                 .build();
-        SavedProjectResponseDTO savedProjectResponseDTO = SavedProjectResponseDTO.builder()
-                .project(savedProjectDTO)
-                .build();
-        when(projectService.updateProject(projectDTO)).thenReturn(savedProjectResponseDTO);
+        when(projectService.updateProject(projectDTO)).thenReturn(savedProjectDTO);
 
         mockMvc.perform(put("/api/project")
                 .content(jsonBody)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.project.code", equalTo(projectDTO.getCode())))
-                .andExpect(jsonPath("$.project.name", equalTo(projectDTO.getName())))
-                .andExpect(jsonPath("$.project.description", equalTo(projectDTO.getDescription())))
-                .andExpect(jsonPath("$.project.id", notNullValue()))
+                .andExpect(jsonPath("$.code", equalTo(projectDTO.getCode())))
+                .andExpect(jsonPath("$.name", equalTo(projectDTO.getName())))
+                .andExpect(jsonPath("$.description", equalTo(projectDTO.getDescription())))
+                .andExpect(jsonPath("$.id", notNullValue()))
                 .andReturn();
 
         verify(projectService).updateProject(projectDTO);

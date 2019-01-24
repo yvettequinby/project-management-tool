@@ -1,6 +1,5 @@
 package com.javafreelancedeveloper.projectmanagementtool.web;
 
-import com.javafreelancedeveloper.projectmanagementtool.dto.SavedProjectResponseDTO;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectListDTO;
 import com.javafreelancedeveloper.projectmanagementtool.service.ProjectService;
@@ -15,32 +14,24 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("api/project")
 @AllArgsConstructor
-public class ProjectController {
+public class ProjectController extends BaseController {
 
     private final ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<SavedProjectResponseDTO> createNewProject(@Valid @RequestBody ProjectDTO project,
-                                                                    BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            SavedProjectResponseDTO savedProjectResponseDTO = SavedProjectResponseDTO.buildErrorResponse(bindingResult.getFieldErrors(), project);
-            return new ResponseEntity<>(savedProjectResponseDTO, HttpStatus.BAD_REQUEST);
-        } else {
-            SavedProjectResponseDTO savedProjectResponseDTO = projectService.saveProject(project);
-            return new ResponseEntity<>(savedProjectResponseDTO, HttpStatus.CREATED);
-        }
+    public ResponseEntity<ProjectDTO> createNewProject(@Valid @RequestBody ProjectDTO project,
+                                                       BindingResult bindingResult) {
+        validate(bindingResult);
+        ProjectDTO savedProject = projectService.saveProject(project);
+        return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<SavedProjectResponseDTO> updateProject(@Valid @RequestBody ProjectDTO project,
-                                                                    BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            SavedProjectResponseDTO savedProjectResponseDTO = SavedProjectResponseDTO.buildErrorResponse(bindingResult.getFieldErrors(), project);
-            return new ResponseEntity<>(savedProjectResponseDTO, HttpStatus.BAD_REQUEST);
-        } else {
-            SavedProjectResponseDTO savedProjectResponseDTO = projectService.updateProject(project);
-            return new ResponseEntity<>(savedProjectResponseDTO, HttpStatus.ACCEPTED);
-        }
+    public ResponseEntity<ProjectDTO> updateProject(@Valid @RequestBody ProjectDTO project,
+                                                    BindingResult bindingResult) {
+        validate(bindingResult);
+        ProjectDTO savedProject = projectService.updateProject(project);
+        return new ResponseEntity<>(savedProject, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{projectCode}")

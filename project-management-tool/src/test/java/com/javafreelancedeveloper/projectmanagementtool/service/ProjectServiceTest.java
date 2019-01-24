@@ -2,9 +2,7 @@ package com.javafreelancedeveloper.projectmanagementtool.service;
 
 import com.javafreelancedeveloper.projectmanagementtool.domain.Project;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
-import com.javafreelancedeveloper.projectmanagementtool.dto.SavedProjectResponseDTO;
-import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectCodeException;
-import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectIdException;
+import com.javafreelancedeveloper.projectmanagementtool.exception.ValidationException;
 import com.javafreelancedeveloper.projectmanagementtool.repository.ProjectRepository;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +43,7 @@ public class ProjectServiceTest {
                 .build();
 
         Mockito.doThrow(DataIntegrityViolationException.class).when(projectRepository).save(any());
-        expectedException.expect(ProjectCodeException.class);
+        expectedException.expect(ValidationException.class);
 
         projectService.saveProject(projectDTO);
 
@@ -74,18 +72,18 @@ public class ProjectServiceTest {
 
         when(projectRepository.save(any())).thenReturn(savedProject);
 
-        SavedProjectResponseDTO savedProjectDTO = projectService.saveProject(projectDTO);
+        ProjectDTO savedProjectDTO = projectService.saveProject(projectDTO);
 
         verify(projectRepository).save(any());
 
-        assertEquals(savedProject.getId(), savedProjectDTO.getProject().getId());
-        assertEquals(savedProject.getCode(), savedProjectDTO.getProject().getCode());
-        assertEquals(savedProject.getCreatedTimestamp(), savedProjectDTO.getProject().getCreatedTimestamp());
-        assertEquals(savedProject.getDescription(), savedProjectDTO.getProject().getDescription());
-        assertEquals(savedProject.getEndDate(), savedProjectDTO.getProject().getEndDate());
-        assertEquals(savedProject.getName(), savedProjectDTO.getProject().getName());
-        assertEquals(savedProject.getStartDate(), savedProjectDTO.getProject().getStartDate());
-        assertEquals(savedProject.getUpdatedTimestamp(), savedProjectDTO.getProject().getUpdatedTimestamp());
+        assertEquals(savedProject.getId(), savedProjectDTO.getId());
+        assertEquals(savedProject.getCode(), savedProjectDTO.getCode());
+        assertEquals(savedProject.getCreatedTimestamp(), savedProjectDTO.getCreatedTimestamp());
+        assertEquals(savedProject.getDescription(), savedProjectDTO.getDescription());
+        assertEquals(savedProject.getEndDate(), savedProjectDTO.getEndDate());
+        assertEquals(savedProject.getName(), savedProjectDTO.getName());
+        assertEquals(savedProject.getStartDate(), savedProjectDTO.getStartDate());
+        assertEquals(savedProject.getUpdatedTimestamp(), savedProjectDTO.getUpdatedTimestamp());
 
     }
 
@@ -123,19 +121,19 @@ public class ProjectServiceTest {
         when(projectRepository.findById(projectDTO.getId())).thenReturn(Optional.of(projectBeforeUpdate));
         when(projectRepository.save(any())).thenReturn(projectAfterUpdate);
 
-        SavedProjectResponseDTO savedProjectDTO = projectService.updateProject(projectDTO);
+        ProjectDTO savedProjectDTO = projectService.updateProject(projectDTO);
 
         verify(projectRepository).save(any());
         verify(projectRepository).findById(projectDTO.getId());
 
-        assertEquals(projectAfterUpdate.getId(), savedProjectDTO.getProject().getId());
-        assertEquals(projectAfterUpdate.getCode(), savedProjectDTO.getProject().getCode());
-        assertEquals(projectAfterUpdate.getCreatedTimestamp(), savedProjectDTO.getProject().getCreatedTimestamp());
-        assertEquals(projectAfterUpdate.getDescription(), savedProjectDTO.getProject().getDescription());
-        assertEquals(projectAfterUpdate.getEndDate(), savedProjectDTO.getProject().getEndDate());
-        assertEquals(projectAfterUpdate.getName(), savedProjectDTO.getProject().getName());
-        assertEquals(projectAfterUpdate.getStartDate(), savedProjectDTO.getProject().getStartDate());
-        assertEquals(projectAfterUpdate.getUpdatedTimestamp(), savedProjectDTO.getProject().getUpdatedTimestamp());
+        assertEquals(projectAfterUpdate.getId(), savedProjectDTO.getId());
+        assertEquals(projectAfterUpdate.getCode(), savedProjectDTO.getCode());
+        assertEquals(projectAfterUpdate.getCreatedTimestamp(), savedProjectDTO.getCreatedTimestamp());
+        assertEquals(projectAfterUpdate.getDescription(), savedProjectDTO.getDescription());
+        assertEquals(projectAfterUpdate.getEndDate(), savedProjectDTO.getEndDate());
+        assertEquals(projectAfterUpdate.getName(), savedProjectDTO.getName());
+        assertEquals(projectAfterUpdate.getStartDate(), savedProjectDTO.getStartDate());
+        assertEquals(projectAfterUpdate.getUpdatedTimestamp(), savedProjectDTO.getUpdatedTimestamp());
 
     }
 
@@ -149,7 +147,7 @@ public class ProjectServiceTest {
                 .name("Project 1")
                 .build();
 
-        expectedException.expect(ProjectIdException.class);
+        expectedException.expect(ValidationException.class);
         projectService.updateProject(projectDTO);
 
     }
@@ -175,7 +173,7 @@ public class ProjectServiceTest {
                 .build();
 
         when(projectRepository.findById(projectDTO.getId())).thenReturn(Optional.of(projectBeforeUpdate));
-        expectedException.expect(ProjectCodeException.class);
+        expectedException.expect(ValidationException.class);
         projectService.updateProject(projectDTO);
         verify(projectRepository).findById(projectDTO.getId());
 
@@ -193,7 +191,7 @@ public class ProjectServiceTest {
                 .build();
 
         when(projectRepository.findById(projectDTO.getId())).thenReturn(Optional.empty());
-        expectedException.expect(ProjectIdException.class);
+        expectedException.expect(ValidationException.class);
         projectService.updateProject(projectDTO);
         verify(projectRepository).findById(projectDTO.getId());
 
