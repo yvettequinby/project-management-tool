@@ -10,25 +10,19 @@ import java.util.Map;
 
 @Getter
 @NoArgsConstructor
-public class FieldValidationErrorResponseDTO {
-
-    protected final Map<String, Collection<String>> validationErrorMap = new HashMap<>();
-
+public class FieldValidationErrorResponseDTO extends HashMap<String, Collection<String>> {
 
     public FieldValidationErrorResponseDTO(String fieldName, String errorMessage) {
         addError(fieldName, errorMessage);
     }
 
     public void addError(String fieldName, String errorMessage) {
-        Collection<String> fieldValidationErrors = validationErrorMap.get(fieldName);
+        Collection<String> fieldValidationErrors = this.get(fieldName);
         if (fieldValidationErrors == null) {
             fieldValidationErrors = new ArrayList<>();
-            validationErrorMap.put(fieldName, fieldValidationErrors);
+            this.put(fieldName, fieldValidationErrors);
         }
         fieldValidationErrors.add(errorMessage);
     }
 
-    public boolean isHasValidationErrors() {
-        return !validationErrorMap.isEmpty();
-    }
 }

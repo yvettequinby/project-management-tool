@@ -88,9 +88,8 @@ public class ProjectControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.validationErrorMap.code[0]", equalTo("Project Code must be 4 or 5 characters long.")))
-                .andExpect(jsonPath("$.validationErrorMap.name[0]", equalTo("Project Name is required")))
-                .andExpect(jsonPath("$.hasValidationErrors", equalTo(true)))
+                .andExpect(jsonPath("$.code[0]", equalTo("Project Code must be 4 or 5 characters long.")))
+                .andExpect(jsonPath("$.name[0]", equalTo("Project Name is required")))
                 .andReturn();
 
     }
