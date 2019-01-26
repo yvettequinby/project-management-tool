@@ -12,7 +12,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { projects } = this.props.projectContainer;
+    const { projects } = this.props;
     return (
       <div className="projects">
         <div className="container">
@@ -35,12 +35,12 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  projectContainer: PropTypes.object.isRequired,
+  projects: PropTypes.object.isRequired,
   getProjects: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  projectContainer: state.projectContainer
+  projects: state.projectContainer.projects
 });
 
 export default connect(

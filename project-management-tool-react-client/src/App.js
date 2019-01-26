@@ -20,7 +20,7 @@ class App extends Component {
             <Route exact path="/addProject" component={AddProject} />
             <Route
               exact
-              path="/updateProject/:code"
+              path="/updateProject/:projectCode"
               component={UpdateProject}
             />
           </div>
