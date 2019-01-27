@@ -3,6 +3,7 @@ import { getProject, updateProject } from "../../actions/projectActions";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
+import FieldErrors from "./FieldErrors";
 
 class UpdateProject extends Component {
   constructor() {
@@ -22,6 +23,9 @@ class UpdateProject extends Component {
 
   // life cycle hooks
   componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
     const {
       id,
       name,
@@ -66,6 +70,7 @@ class UpdateProject extends Component {
   }
 
   render() {
+    const { errors } = this.state;
     return (
       <div className="project">
         <div className="container">
@@ -77,52 +82,67 @@ class UpdateProject extends Component {
                 <div className="form-group">
                   <input
                     type="text"
-                    className="form-control form-control-lg "
                     name="name"
                     placeholder="Project Name"
                     value={this.state.name}
                     onChange={this.onChange}
+                    className={classnames("form-control form-control-lg", {
+                      "is-invalid": errors.name
+                    })}
                   />
+                  <FieldErrors msgs={errors.name} />
                 </div>
                 <div className="form-group">
                   <input
                     type="text"
-                    className="form-control form-control-lg"
                     placeholder="Unique Project Code"
                     name="code"
                     disabled
                     value={this.state.code}
                     onChange={this.onChange}
+                    className={classnames("form-control form-control-lg", {
+                      "is-invalid": errors.code
+                    })}
                   />
+                  <FieldErrors msgs={errors.code} />
                 </div>
                 <div className="form-group">
                   <textarea
-                    className="form-control form-control-lg"
                     placeholder="Project Description"
                     name="description"
                     value={this.state.description}
                     onChange={this.onChange}
+                    className={classnames("form-control form-control-lg", {
+                      "is-invalid": errors.description
+                    })}
                   />
+                  <FieldErrors msgs={errors.description} />
                 </div>
                 <h6>Start Date</h6>
                 <div className="form-group">
                   <input
                     type="date"
-                    className="form-control form-control-lg"
                     name="startDate"
                     value={this.state.startDate}
                     onChange={this.onChange}
+                    className={classnames("form-control form-control-lg", {
+                      "is-invalid": errors.startDate
+                    })}
                   />
+                  <FieldErrors msgs={errors.startDate} />
                 </div>
                 <h6>Estimated End Date</h6>
                 <div className="form-group">
                   <input
                     type="date"
-                    className="form-control form-control-lg"
                     name="endDate"
                     value={this.state.endDate}
                     onChange={this.onChange}
+                    className={classnames("form-control form-control-lg", {
+                      "is-invalid": errors.endDate
+                    })}
                   />
+                  <FieldErrors msgs={errors.endDate} />
                 </div>
 
                 <input
@@ -141,11 +161,13 @@ class UpdateProject extends Component {
 UpdateProject.propTypes = {
   getProject: PropTypes.func.isRequired,
   project: PropTypes.object.isRequired,
-  updateProject: PropTypes.func.isRequired
+  updateProject: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  project: state.projectContainer.project
+  project: state.projectContainer.project,
+  errors: state.errors
 });
 
 export default connect(
