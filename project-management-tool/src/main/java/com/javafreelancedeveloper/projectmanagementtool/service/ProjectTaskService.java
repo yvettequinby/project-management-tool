@@ -69,9 +69,10 @@ public class ProjectTaskService {
         if (projectTask.getId() == null) {
             // create a project task
             ProjectTask saveMe = ProjectTaskMapper.map(projectTask);
-            Integer projectTaskSequence = project.getProjectTasks().size()+1;
+            Integer projectTaskSequence = project.getProjectTasks().size() + 1;
             String projectTaskCode = (projectCode + "_" + String.format("%04d", projectTaskSequence)).toUpperCase();
             saveMe.setCode(projectTaskCode);
+            setProjectTaskDefaults(saveMe);
             saveMe.setProject(project);
             project.getProjectTasks().add(saveMe);
             try {
@@ -83,7 +84,7 @@ public class ProjectTaskService {
         } else {
             // update a project task
             ProjectTask staleProjectTask = projectTaskRepository.findById(projectTask.getId()).orElseThrow(() -> new ProjectTaskNotFoundException("No project task found for ID [" + projectTask.getId() + "]."));
-            if(!staleProjectTask.getCode().equals(projectTask.getCode())) {
+            if (!staleProjectTask.getCode().equals(projectTask.getCode())) {
                 throw new ValidationException(new FieldValidationErrorResponseDTO("code", "Project Task Code is inconsistent with id. Invalid input."));
             }
             staleProjectTask.setAcceptanceCriteria(projectTask.getAcceptanceCriteria());
@@ -91,10 +92,20 @@ public class ProjectTaskService {
             staleProjectTask.setPriority(projectTask.getPriority());
             staleProjectTask.setStatus(projectTask.getStatus());
             staleProjectTask.setSummary(projectTask.getSummary());
+            setProjectTaskDefaults(staleProjectTask);
             ProjectTask savedProjectTask = projectTaskRepository.save(staleProjectTask);
             return ProjectTaskMapper.map(savedProjectTask);
         }
 
+    }
+
+    private void setProjectTaskDefaults(ProjectTask projectTask) {
+        if (projectTask.getStatus() == null) {
+            projectTask.setStatus("TODO");
+        }
+        if (projectTask.getPriority() == null) {
+            projectTask.setPriority(3);
+        }
     }
 
     public void deleteProjectTask(String projectTaskCode) {
