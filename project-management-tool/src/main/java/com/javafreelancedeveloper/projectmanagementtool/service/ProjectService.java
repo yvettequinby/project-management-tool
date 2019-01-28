@@ -6,6 +6,7 @@ import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectListDTO;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectNotFoundException;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ValidationException;
+import com.javafreelancedeveloper.projectmanagementtool.mapper.ProjectMapper;
 import com.javafreelancedeveloper.projectmanagementtool.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +24,11 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
 
     public ProjectDTO saveProject(ProjectDTO projectDTO) {
-        Project project = toProject(projectDTO);
+        Project project = ProjectMapper.map(projectDTO);
         try {
             project.setCode(project.getCode().toUpperCase());
             Project savedProject = projectRepository.save(project);
-            ProjectDTO savedProjectDTO = toProjectDTO(savedProject);
+            ProjectDTO savedProjectDTO = ProjectMapper.map(savedProject);
             return savedProjectDTO;
         } catch (DataIntegrityViolationException e) {
             throw new ValidationException(new FieldValidationErrorResponseDTO("code", "Project Code must be unique. A project with this code already exists."));
@@ -48,7 +49,7 @@ public class ProjectService {
         project.setStartDate(projectDTO.getStartDate());
         project.setEndDate(projectDTO.getEndDate());
         Project savedProject = projectRepository.save(project);
-        ProjectDTO savedProjectDTO = toProjectDTO(savedProject);
+        ProjectDTO savedProjectDTO = ProjectMapper.map(savedProject);
         return savedProjectDTO;
     }
 
@@ -57,14 +58,14 @@ public class ProjectService {
         if (project == null) {
             throw new ProjectNotFoundException("No project found with code [" + projectCode + "]");
         }
-        return toProjectDTO(project);
+        return ProjectMapper.map(project);
 
     }
 
     public ProjectListDTO listProjects() {
         List<ProjectDTO> projectList = new ArrayList<>();
         Iterable<Project> projects = projectRepository.findAll();
-        projects.forEach(p -> projectList.add(toProjectDTO(p)));
+        projects.forEach(p -> projectList.add(ProjectMapper.map(p)));
         return new ProjectListDTO(projectList);
 
     }
@@ -77,28 +78,6 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    private ProjectDTO toProjectDTO(Project project) {
-        return ProjectDTO.builder()
-                .createdTimestamp(project.getCreatedTimestamp())
-                .description(project.getDescription())
-                .endDate(project.getEndDate())
-                .code(project.getCode())
-                .name(project.getName())
-                .startDate(project.getStartDate())
-                .updatedTimestamp(project.getUpdatedTimestamp())
-                .id(project.getId())
-                .build();
-    }
 
-    private Project toProject(ProjectDTO projectDTO) {
-        return Project.builder()
-                .id(projectDTO.getId())
-                .code(projectDTO.getCode())
-                .name(projectDTO.getName())
-                .description(projectDTO.getDescription())
-                .startDate(projectDTO.getStartDate())
-                .endDate(projectDTO.getEndDate())
-                .build();
-    }
 
 }

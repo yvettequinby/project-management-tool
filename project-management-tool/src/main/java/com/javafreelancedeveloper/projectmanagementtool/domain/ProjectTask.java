@@ -6,31 +6,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Project {
+public class ProjectTask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
     @Column(updatable = false, unique = true)
     private String code;
-    private String description;
-    private Date startDate;
-    private Date endDate;
+    private String summary;
+    private String acceptanceCriteria;
+    private String status;
+    private Integer priority;
+    private Date dueDate;
     private Date createdTimestamp;
     private Date updatedTimestamp;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "project")
-    private List<ProjectTask> projectTasks = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "project_id", nullable = false, updatable = false)
+    private Project project;
 
     @PrePersist
     public void onCreate() {
