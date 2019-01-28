@@ -69,7 +69,9 @@ public class ProjectTaskService {
         if (projectTask.getId() == null) {
             // create a project task
             ProjectTask saveMe = ProjectTaskMapper.map(projectTask);
-            saveMe.setCode(saveMe.getCode().toUpperCase());
+            Integer projectTaskSequence = project.getProjectTasks().size()+1;
+            String projectTaskCode = (projectCode + "_" + String.format("%04d", projectTaskSequence)).toUpperCase();
+            saveMe.setCode(projectTaskCode);
             saveMe.setProject(project);
             project.getProjectTasks().add(saveMe);
             try {

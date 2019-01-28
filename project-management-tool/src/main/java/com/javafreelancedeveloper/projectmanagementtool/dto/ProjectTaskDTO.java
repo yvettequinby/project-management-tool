@@ -18,8 +18,6 @@ import java.util.Date;
 public class ProjectTaskDTO {
 
     private Long id;
-    @NotBlank(message = "Project Task Code is required.")
-    @Size(min = 4, max = 5, message = "Project Task Code must be 4 or 5 characters long.")
     private String code;
     @NotBlank(message = "Project Task Summary is required.")
     private String summary;
