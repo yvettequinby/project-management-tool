@@ -10,5 +10,5 @@ import java.util.List;
 public class ProjectTaskListDTO {
 
     private ProjectDTO project;
-    private List<ProjectTaskDTO> projectTasks;
+    private List<ProjectTaskLiteDTO> projectTasks;
 }

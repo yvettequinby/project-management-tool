@@ -2,10 +2,7 @@ package com.javafreelancedeveloper.projectmanagementtool.service;
 
 import com.javafreelancedeveloper.projectmanagementtool.domain.Project;
 import com.javafreelancedeveloper.projectmanagementtool.domain.ProjectTask;
-import com.javafreelancedeveloper.projectmanagementtool.dto.FieldValidationErrorResponseDTO;
-import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
-import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectTaskDTO;
-import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectTaskListDTO;
+import com.javafreelancedeveloper.projectmanagementtool.dto.*;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectNotFoundException;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ProjectTaskNotFoundException;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ValidationException;
@@ -17,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,12 +28,16 @@ public class ProjectTaskService {
     private final ProjectTaskRepository projectTaskRepository;
 
 
-    public ProjectTaskDTO findByProjectTaskCode(String projectTaskCode) {
+    public ProjectTaskDTO findByProjectTaskCode(String projectCode, String projectTaskCode) {
+        Project project = projectRepository.findByCode(projectCode);
         ProjectTask projectTask = projectTaskRepository.findByCode(projectTaskCode);
         if (projectTask == null) {
             throw new ProjectTaskNotFoundException("No project task found with code [" + projectTaskCode + "]");
         }
-        return ProjectTaskMapper.map(projectTask);
+        if (!projectTask.getProject().getId().equals(project.getId())) {
+            throw new ValidationException(new FieldValidationErrorResponseDTO("project.code", "The project task does not belong to the project [" + projectCode + "]. Invalid request."));
+        }
+        return ProjectTaskMapper.map(projectTask, ProjectMapper.map(project));
 
     }
 
@@ -48,7 +50,7 @@ public class ProjectTaskService {
 
         ProjectDTO projectDTO = ProjectMapper.map(project);
 
-        List<ProjectTaskDTO> projectTaskDTOs = project.getProjectTasks()
+        List<ProjectTaskLiteDTO> projectTaskDTOs = project.getProjectTasks()
                 .stream()
                 .map(ProjectTaskMapper::map)
                 .collect(Collectors.toList());
@@ -60,7 +62,7 @@ public class ProjectTaskService {
 
     }
 
-    public ProjectTaskDTO saveProjectTask(String projectCode, ProjectTaskDTO projectTask) {
+    public ProjectTaskDTO saveProjectTask(String projectCode, ProjectTaskLiteDTO projectTask) {
 
         Project project = projectRepository.findByCode(projectCode);
         if (project == null) {
@@ -77,7 +79,7 @@ public class ProjectTaskService {
             project.getProjectTasks().add(saveMe);
             try {
                 ProjectTask savedProjectTask = projectTaskRepository.save(saveMe);
-                return ProjectTaskMapper.map(savedProjectTask);
+                return ProjectTaskMapper.map(savedProjectTask, ProjectMapper.map(savedProjectTask.getProject()));
             } catch (DataIntegrityViolationException e) {
                 throw new ValidationException(new FieldValidationErrorResponseDTO("code", "Project Task Code must be unique. A project task with this code already exists."));
             }
@@ -87,6 +89,9 @@ public class ProjectTaskService {
             if (!staleProjectTask.getCode().equals(projectTask.getCode())) {
                 throw new ValidationException(new FieldValidationErrorResponseDTO("code", "Project Task Code is inconsistent with id. Invalid input."));
             }
+            if (!staleProjectTask.getProject().getId().equals(project.getId())) {
+                throw new ValidationException(new FieldValidationErrorResponseDTO("project.code", "The project task does not belong to the project [" + projectCode + "]. Invalid request."));
+            }
             staleProjectTask.setAcceptanceCriteria(projectTask.getAcceptanceCriteria());
             staleProjectTask.setDueDate(projectTask.getDueDate());
             staleProjectTask.setPriority(projectTask.getPriority());
@@ -94,13 +99,13 @@ public class ProjectTaskService {
             staleProjectTask.setSummary(projectTask.getSummary());
             setProjectTaskDefaults(staleProjectTask);
             ProjectTask savedProjectTask = projectTaskRepository.save(staleProjectTask);
-            return ProjectTaskMapper.map(savedProjectTask);
+            return ProjectTaskMapper.map(savedProjectTask, ProjectMapper.map(savedProjectTask.getProject()));
         }
 
     }
 
     private void setProjectTaskDefaults(ProjectTask projectTask) {
-        if (projectTask.getStatus() == null) {
+        if (StringUtils.isEmpty(projectTask.getStatus())) {
             projectTask.setStatus("TODO");
         }
         if (projectTask.getPriority() == null) {
@@ -108,11 +113,14 @@ public class ProjectTaskService {
         }
     }
 
-    public void deleteProjectTask(String projectTaskCode) {
+    public void deleteProjectTask(String projectCode, String projectTaskCode) {
 
         ProjectTask projectTask = projectTaskRepository.findByCode(projectTaskCode.toUpperCase());
         if (projectTask == null) {
             throw new ProjectTaskNotFoundException("No project task found with code [" + projectTaskCode + "]");
+        }
+        if (!projectTask.getProject().getCode().equals(projectCode)) {
+            throw new ValidationException(new FieldValidationErrorResponseDTO("project.code", "The project task does not belong to the project [" + projectCode + "]. Invalid request."));
         }
         projectTaskRepository.delete(projectTask);
     }
