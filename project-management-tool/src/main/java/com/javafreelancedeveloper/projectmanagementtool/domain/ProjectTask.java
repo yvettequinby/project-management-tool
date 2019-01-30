@@ -20,6 +20,8 @@ public class ProjectTask {
     private Long id;
     @Column(updatable = false, unique = true)
     private String code;
+    @Column(updatable = false, unique = true)
+    private Integer sequence;
     private String summary;
     private String acceptanceCriteria;
     private String status;

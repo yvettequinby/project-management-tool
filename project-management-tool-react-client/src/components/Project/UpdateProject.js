@@ -3,7 +3,7 @@ import { getProject, updateProject } from "../../actions/projectActions";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
-import FieldErrors from "./FieldErrors";
+import FieldErrors from "../Layout/FieldErrors";
 
 class UpdateProject extends Component {
   constructor() {
@@ -78,8 +78,10 @@ class UpdateProject extends Component {
             <div className="col-md-8 m-auto">
               <h5 className="display-4 text-center">Update Project</h5>
               <hr />
+
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
+                  <h6>Name</h6>
                   <input
                     type="text"
                     name="name"
@@ -93,6 +95,7 @@ class UpdateProject extends Component {
                   <FieldErrors msgs={errors.name} />
                 </div>
                 <div className="form-group">
+                  <h6>Project Code</h6>
                   <input
                     type="text"
                     placeholder="Unique Project Code"
@@ -107,6 +110,7 @@ class UpdateProject extends Component {
                   <FieldErrors msgs={errors.code} />
                 </div>
                 <div className="form-group">
+                  <h6>Description</h6>
                   <textarea
                     placeholder="Project Description"
                     name="description"
@@ -118,8 +122,9 @@ class UpdateProject extends Component {
                   />
                   <FieldErrors msgs={errors.description} />
                 </div>
-                <h6>Start Date</h6>
+
                 <div className="form-group">
+                  <h6>Start Date</h6>
                   <input
                     type="date"
                     name="startDate"
@@ -131,8 +136,9 @@ class UpdateProject extends Component {
                   />
                   <FieldErrors msgs={errors.startDate} />
                 </div>
-                <h6>Estimated End Date</h6>
+
                 <div className="form-group">
+                  <h6>Estimated End Date</h6>
                   <input
                     type="date"
                     name="endDate"

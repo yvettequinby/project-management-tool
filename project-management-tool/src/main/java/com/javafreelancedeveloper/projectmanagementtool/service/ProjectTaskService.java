@@ -16,6 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,8 @@ public class ProjectTaskService {
                 .map(ProjectTaskMapper::map)
                 .collect(Collectors.toList());
 
+        projectTaskDTOs.sort(Comparator.comparing(o -> o.getPriority()));
+
         return ProjectTaskListDTO.builder()
                 .project(projectDTO)
                 .projectTasks(projectTaskDTOs)
@@ -71,8 +74,10 @@ public class ProjectTaskService {
         if (projectTask.getId() == null) {
             // create a project task
             ProjectTask saveMe = ProjectTaskMapper.map(projectTask);
-            Integer projectTaskSequence = project.getProjectTasks().size() + 1;
+            Integer projectTaskSequence = project.getProjectTasks().stream().map(ProjectTask::getSequence).max(Comparator.comparing(Integer::valueOf)).orElse(0);
+            projectTaskSequence++;
             String projectTaskCode = (projectCode + "_" + String.format("%04d", projectTaskSequence)).toUpperCase();
+            saveMe.setSequence(projectTaskSequence);
             saveMe.setCode(projectTaskCode);
             setProjectTaskDefaults(saveMe);
             saveMe.setProject(project);

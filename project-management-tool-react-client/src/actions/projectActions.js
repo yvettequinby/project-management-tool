@@ -3,7 +3,7 @@ import { GET_ERRORS, GET_PROJECTS, GET_PROJECT, DELETE_PROJECT } from "./types";
 
 export const createProject = (project, history) => async dispatch => {
   try {
-    const res = await axios.post("/api/project", project);
+    await axios.post("/api/project", project);
     history.push("/dashboard");
     dispatch({ type: GET_ERRORS, payload: {} });
   } catch (err) {
@@ -16,7 +16,7 @@ export const createProject = (project, history) => async dispatch => {
 
 export const updateProject = (project, history) => async dispatch => {
   try {
-    const res = await axios.put("/api/project", project);
+    await axios.put("/api/project", project);
     history.push("/dashboard");
     dispatch({
       type: GET_ERRORS,
@@ -57,7 +57,7 @@ export const deleteProject = projectCode => async dispatch => {
       "Are you sure you want to delete this project and all the related tasks?"
     )
   ) {
-    const res = await axios.delete(`/api/project/${projectCode}`);
+    await axios.delete(`/api/project/${projectCode}`);
     dispatch({ type: DELETE_PROJECT, payload: projectCode });
   }
 };
