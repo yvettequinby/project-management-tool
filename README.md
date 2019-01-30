@@ -24,4 +24,17 @@ The project does use Lombok, so you'll require the Lombok plugins if running fro
 
 ## Front End
 The front-end is a React/Redux web application.
-TODO
+Make sure the back-end is running, then fire it up with "npm start". 
+
+## Other Notes
+This is a sample project, so I haven't gone-to-town on delivering production quality code.
+The obvious example in the Spring Boot back-end is the use of H2 database.
+Other notable missing factors are: lack of handling for concurrent updates to the database, lack of API documentation and lack of test coverage.
+
+The React.js front-end is my first React.js project. 
+I strongly suspect that the design and structure is less than best-practice.
+But it's been a good learning experience and I hope to have another, better, project in the near future.
+
+## TODO
+* Back-end security
+* Front-end security
