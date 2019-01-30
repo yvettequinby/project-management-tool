@@ -19,13 +19,7 @@ export default function(state = initialState, action) {
     case GET_PROJECT_TASK:
       return { ...state, projectTask: action.payload };
     case DELETE_PROJECT_TASK:
-      // remove deleted project task directly from state
-      return {
-        ...state,
-        projectTaskList: state.projectTaskList.projectTasks.filter(
-          projectTask => projectTask.code !== action.payload
-        )
-      };
+      return { ...state, projectTaskList: action.payload };
     // TODO
     default:
       return state;
