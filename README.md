@@ -10,7 +10,7 @@ The other contains the React front-end client.
 * ReactJS and Redux front-end
 * Spring Boot Java back-end application
 * Spring RESTful APIs on the back-end
-* Secured by Spring Security
+* Secured by Spring Security and JWT
 * Spring Data and JPA for persistence
 * H2 database (might make that MySQL later, but H2 is good for demo purposes)
 * Unit Testing with JUnit, Mockito and MockMVC
@@ -38,3 +38,9 @@ But it's been a good learning experience and I hope to have another, better, pro
 ## TODO
 * Back-end security
 * Front-end security
+
+## Use Cases
+* Register a new user
+* Login with user
+* Create/Read/Update/Delete Project
+* Create/Read/Update/Delete Project Task
