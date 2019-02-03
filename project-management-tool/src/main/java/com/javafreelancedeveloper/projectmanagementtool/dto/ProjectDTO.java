@@ -28,4 +28,6 @@ public class ProjectDTO {
     private Date createdTimestamp;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSZ")
     private Date updatedTimestamp;
+
+
 }

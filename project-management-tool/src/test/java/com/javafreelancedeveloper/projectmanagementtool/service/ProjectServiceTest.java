@@ -1,9 +1,11 @@
 package com.javafreelancedeveloper.projectmanagementtool.service;
 
 import com.javafreelancedeveloper.projectmanagementtool.domain.Project;
+import com.javafreelancedeveloper.projectmanagementtool.domain.User;
 import com.javafreelancedeveloper.projectmanagementtool.dto.ProjectDTO;
 import com.javafreelancedeveloper.projectmanagementtool.exception.ValidationException;
 import com.javafreelancedeveloper.projectmanagementtool.repository.ProjectRepository;
+import com.javafreelancedeveloper.projectmanagementtool.repository.UserRepository;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,8 +27,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectServiceTest {
 
+    private static final String USERNAME = "username";
     @Mock
     private ProjectRepository projectRepository;
+    @Mock
+    private UserRepository userRepository;
     @InjectMocks
     private ProjectService projectService;
     @Rule
@@ -41,13 +46,14 @@ public class ProjectServiceTest {
                 .code("TST1")
                 .name("Project 1")
                 .build();
-
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(new User()));
         Mockito.doThrow(DataIntegrityViolationException.class).when(projectRepository).save(any());
         expectedException.expect(ValidationException.class);
 
-        projectService.saveProject(projectDTO);
+        projectService.saveProject(projectDTO, USERNAME);
 
         verify(projectRepository).save(any());
+        verify(userRepository).findByUsername(any());
 
     }
 
@@ -70,11 +76,13 @@ public class ProjectServiceTest {
                 .name("Project 1")
                 .build();
 
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(new User()));
         when(projectRepository.save(any())).thenReturn(savedProject);
 
-        ProjectDTO savedProjectDTO = projectService.saveProject(projectDTO);
+        ProjectDTO savedProjectDTO = projectService.saveProject(projectDTO, USERNAME);
 
         verify(projectRepository).save(any());
+        verify(userRepository).findByUsername(any());
 
         assertEquals(savedProject.getId(), savedProjectDTO.getId());
         assertEquals(savedProject.getCode(), savedProjectDTO.getCode());
@@ -93,6 +101,8 @@ public class ProjectServiceTest {
 
         Date createdTimeStamp = new Date();
 
+        User user = User.builder().username(USERNAME).build();
+
         Project projectBeforeUpdate = Project.builder()
                 .description("WooWoo")
                 .code("TST1")
@@ -100,6 +110,7 @@ public class ProjectServiceTest {
                 .id(1L)
                 .createdTimestamp(createdTimeStamp)
                 .updatedTimestamp(createdTimeStamp)
+                .user(user)
                 .build();
 
         Project projectAfterUpdate = Project.builder()
@@ -107,6 +118,7 @@ public class ProjectServiceTest {
                 .code("TST1")
                 .name("Project 1")
                 .id(1L)
+                .user(user)
                 .createdTimestamp(createdTimeStamp)
                 .updatedTimestamp(new Date())
                 .build();
@@ -121,7 +133,7 @@ public class ProjectServiceTest {
         when(projectRepository.findById(projectDTO.getId())).thenReturn(Optional.of(projectBeforeUpdate));
         when(projectRepository.save(any())).thenReturn(projectAfterUpdate);
 
-        ProjectDTO savedProjectDTO = projectService.updateProject(projectDTO);
+        ProjectDTO savedProjectDTO = projectService.updateProject(projectDTO, USERNAME);
 
         verify(projectRepository).save(any());
         verify(projectRepository).findById(projectDTO.getId());
@@ -148,7 +160,7 @@ public class ProjectServiceTest {
                 .build();
 
         expectedException.expect(ValidationException.class);
-        projectService.updateProject(projectDTO);
+        projectService.updateProject(projectDTO, USERNAME);
 
     }
 
@@ -174,7 +186,7 @@ public class ProjectServiceTest {
 
         when(projectRepository.findById(projectDTO.getId())).thenReturn(Optional.of(projectBeforeUpdate));
         expectedException.expect(ValidationException.class);
-        projectService.updateProject(projectDTO);
+        projectService.updateProject(projectDTO, USERNAME);
         verify(projectRepository).findById(projectDTO.getId());
 
     }
@@ -192,7 +204,7 @@ public class ProjectServiceTest {
 
         when(projectRepository.findById(projectDTO.getId())).thenReturn(Optional.empty());
         expectedException.expect(ValidationException.class);
-        projectService.updateProject(projectDTO);
+        projectService.updateProject(projectDTO, USERNAME);
         verify(projectRepository).findById(projectDTO.getId());
 
     }

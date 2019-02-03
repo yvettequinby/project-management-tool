@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("api/project")
@@ -21,35 +22,39 @@ public class ProjectController extends BaseController {
 
     @PostMapping
     public ResponseEntity<ProjectDTO> createNewProject(@Valid @RequestBody ProjectDTO project,
-                                                       BindingResult bindingResult) {
+                                                       BindingResult bindingResult,
+                                                       Principal principal) {
         validate(bindingResult);
-        ProjectDTO savedProject = projectService.saveProject(project);
+        ProjectDTO savedProject = projectService.saveProject(project, principal.getName());
         return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<ProjectDTO> updateProject(@Valid @RequestBody ProjectDTO project,
-                                                    BindingResult bindingResult) {
+                                                    BindingResult bindingResult,
+                                                    Principal principal) {
         validate(bindingResult);
-        ProjectDTO savedProject = projectService.updateProject(project);
+        ProjectDTO savedProject = projectService.updateProject(project, principal.getName());
         return new ResponseEntity<>(savedProject, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{projectCode}")
-    public ResponseEntity<ProjectDTO> getProjectByProjectCode(@PathVariable String projectCode) {
-        ProjectDTO projectDTO = projectService.findByProjectCode(projectCode.toUpperCase());
+    public ResponseEntity<ProjectDTO> getProjectByProjectCode(@PathVariable String projectCode,
+                                                              Principal principal) {
+        ProjectDTO projectDTO = projectService.findByProjectCode(projectCode.toUpperCase(), principal.getName());
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ProjectListDTO> listProjects() {
-        ProjectListDTO projectListDTO = projectService.listProjects();
+    public ResponseEntity<ProjectListDTO> listProjects(Principal principal) {
+        ProjectListDTO projectListDTO = projectService.listProjects(principal.getName());
         return new ResponseEntity<>(projectListDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{projectCode}")
-    public ResponseEntity<Void> deleteProject(@PathVariable String projectCode) {
-        projectService.deleteProject(projectCode);
+    public ResponseEntity<Void> deleteProject(@PathVariable String projectCode,
+                                              Principal principal) {
+        projectService.deleteProject(projectCode, principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

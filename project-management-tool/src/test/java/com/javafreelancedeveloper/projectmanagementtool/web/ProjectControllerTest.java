@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class ProjectControllerTest {
 
+    private static final String MOCK_USERNAME = "spring";
+
     @MockBean
     private ProjectService projectService;
 
@@ -41,7 +43,7 @@ public class ProjectControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @WithMockUser("spring")
+    @WithMockUser(MOCK_USERNAME)
     @Test
     public void testCreateProject() throws Exception {
 
@@ -60,7 +62,7 @@ public class ProjectControllerTest {
                 .createdTimestamp(new Date())
                 .updatedTimestamp(new Date())
                 .build();
-        when(projectService.saveProject(projectDTO)).thenReturn(savedProjectDTO);
+        when(projectService.saveProject(projectDTO, MOCK_USERNAME)).thenReturn(savedProjectDTO);
 
         mockMvc.perform(post("/api/project")
                 .content(jsonBody)
@@ -73,10 +75,10 @@ public class ProjectControllerTest {
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andReturn();
 
-        verify(projectService).saveProject(projectDTO);
+        verify(projectService).saveProject(projectDTO, MOCK_USERNAME);
     }
 
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = MOCK_USERNAME)
     @Test
     public void testCreateProject_validationErrors() throws Exception {
 
@@ -98,7 +100,7 @@ public class ProjectControllerTest {
 
     }
 
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = MOCK_USERNAME)
     @Test
     public void testUpdateProject() throws Exception {
 
@@ -118,7 +120,7 @@ public class ProjectControllerTest {
                 .createdTimestamp(new Date())
                 .updatedTimestamp(new Date())
                 .build();
-        when(projectService.updateProject(projectDTO)).thenReturn(savedProjectDTO);
+        when(projectService.updateProject(projectDTO, MOCK_USERNAME)).thenReturn(savedProjectDTO);
 
         mockMvc.perform(put("/api/project")
                 .content(jsonBody)
@@ -131,10 +133,10 @@ public class ProjectControllerTest {
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andReturn();
 
-        verify(projectService).updateProject(projectDTO);
+        verify(projectService).updateProject(projectDTO, MOCK_USERNAME);
     }
 
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = MOCK_USERNAME)
     @Test
     public void testDeleteProject() throws Exception {
 
@@ -143,10 +145,10 @@ public class ProjectControllerTest {
         mockMvc.perform(delete(url))
                 .andExpect(status().isOk())
                 .andReturn();
-        verify(projectService).deleteProject(projectCode);
+        verify(projectService).deleteProject(projectCode, MOCK_USERNAME);
     }
 
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = MOCK_USERNAME)
     @Test
     public void testGetProject() throws Exception {
 
@@ -160,7 +162,7 @@ public class ProjectControllerTest {
                 .createdTimestamp(new Date())
                 .updatedTimestamp(new Date())
                 .build();
-        when(projectService.findByProjectCode(projectCode)).thenReturn(projectDTO);
+        when(projectService.findByProjectCode(projectCode, MOCK_USERNAME)).thenReturn(projectDTO);
 
 
         final String url = String.format("/api/project/%s", projectCode);
@@ -175,10 +177,10 @@ public class ProjectControllerTest {
                 .andExpect(jsonPath("$.id", equalTo(projectDTO.getId().intValue())))
                 .andReturn();
 
-        verify(projectService).findByProjectCode(projectCode);
+        verify(projectService).findByProjectCode(projectCode, MOCK_USERNAME);
     }
 
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = MOCK_USERNAME)
     @Test
     public void testListProjects() throws Exception {
 
@@ -192,7 +194,7 @@ public class ProjectControllerTest {
                 .build();
         ProjectListDTO projectList = new ProjectListDTO(Collections.singletonList(projectDTO));
 
-        when(projectService.listProjects()).thenReturn(projectList);
+        when(projectService.listProjects(MOCK_USERNAME)).thenReturn(projectList);
 
         mockMvc.perform(get("/api/project/list")
                 .accept(MediaType.APPLICATION_JSON)
@@ -205,7 +207,7 @@ public class ProjectControllerTest {
                 .andExpect(jsonPath("$.projects[0].id", equalTo(projectDTO.getId().intValue())))
                 .andReturn();
 
-        verify(projectService).listProjects();
+        verify(projectService).listProjects(MOCK_USERNAME);
     }
 
 }

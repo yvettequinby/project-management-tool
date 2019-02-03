@@ -28,8 +28,7 @@ public class ProjectTaskService {
     private final ProjectRepository projectRepository;
     private final ProjectTaskRepository projectTaskRepository;
 
-
-    public ProjectTaskDTO findByProjectTaskCode(String projectCode, String projectTaskCode) {
+    public ProjectTaskDTO findByProjectTaskCode(String projectCode, String projectTaskCode, String username) {
         Project project = projectRepository.findByCode(projectCode);
         ProjectTask projectTask = projectTaskRepository.findByCode(projectTaskCode);
         if (projectTask == null) {
@@ -38,16 +37,18 @@ public class ProjectTaskService {
         if (!projectTask.getProject().getId().equals(project.getId())) {
             throw new ValidationException(new FieldValidationErrorResponseDTO("project.code", "The project task does not belong to the project [" + projectCode + "]. Invalid request."));
         }
+        validateAuthorisedUser(projectTask, username);
         return ProjectTaskMapper.map(projectTask, ProjectMapper.map(project));
 
     }
 
-    public ProjectTaskListDTO getProjectTaskList(String projectCode) {
+    public ProjectTaskListDTO getProjectTaskList(String projectCode, String username) {
 
         Project project = projectRepository.findByCode(projectCode);
         if (project == null) {
             throw new ProjectNotFoundException("No project found with code [" + projectCode + "]");
         }
+        validateAuthorisedUser(project, username);
 
         ProjectDTO projectDTO = ProjectMapper.map(project);
 
@@ -65,12 +66,13 @@ public class ProjectTaskService {
 
     }
 
-    public ProjectTaskDTO saveProjectTask(String projectCode, ProjectTaskLiteDTO projectTask) {
+    public ProjectTaskDTO saveProjectTask(String projectCode, ProjectTaskLiteDTO projectTask, String username) {
 
         Project project = projectRepository.findByCode(projectCode);
         if (project == null) {
             throw new ProjectNotFoundException("No project found with code [" + projectCode + "]");
         }
+        validateAuthorisedUser(project, username);
         if (projectTask.getId() == null) {
             // create a project task
             ProjectTask saveMe = ProjectTaskMapper.map(projectTask);
@@ -118,16 +120,29 @@ public class ProjectTaskService {
         }
     }
 
-    public void deleteProjectTask(String projectCode, String projectTaskCode) {
+    public void deleteProjectTask(String projectCode, String projectTaskCode, String username) {
 
         ProjectTask projectTask = projectTaskRepository.findByCode(projectTaskCode.toUpperCase());
         if (projectTask == null) {
             throw new ProjectTaskNotFoundException("No project task found with code [" + projectTaskCode + "]");
         }
+        validateAuthorisedUser(projectTask, username);
         if (!projectTask.getProject().getCode().equals(projectCode)) {
             throw new ValidationException(new FieldValidationErrorResponseDTO("project.code", "The project task does not belong to the project [" + projectCode + "]. Invalid request."));
         }
         projectTaskRepository.delete(projectTask);
+    }
+
+    private void validateAuthorisedUser(ProjectTask projectTask, String username) {
+        if (!projectTask.getProject().getUser().getUsername().equals(username)) {
+            throw new ProjectNotFoundException("Requested project task not found for user " + username + ".");
+        }
+    }
+
+    private void validateAuthorisedUser(Project project, String username) {
+        if (!project.getUser().getUsername().equals(username)) {
+            throw new ProjectNotFoundException("Requested project not found for user " + username + ".");
+        }
     }
 
 

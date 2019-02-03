@@ -32,6 +32,9 @@ public class Project {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "project")
     private List<ProjectTask> projectTasks = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @PrePersist
     public void onCreate() {
         createdTimestamp = new Date();
