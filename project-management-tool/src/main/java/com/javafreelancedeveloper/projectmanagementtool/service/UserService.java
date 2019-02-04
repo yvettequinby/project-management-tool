@@ -33,7 +33,7 @@ public class UserService {
                 return UserMapper.map(savedUser);
 
             } catch (DataIntegrityViolationException e) {
-                throw new ValidationException(new FieldValidationErrorResponseDTO("username", "Username must be unique. A project with this code already exists."));
+                throw new ValidationException(new FieldValidationErrorResponseDTO("username", "Username must be unique. A user with this username already exists."));
             }
         } else {
             throw new HandledException("Existing user cannot be updated.");
