@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { createProject } from "../../actions/projectActions";
 import classnames from "classnames";
 import FieldErrors from "../Layout/FieldErrors";
+import ErrorMessage from "../Layout/ErrorMessage";
 
 class AddProject extends Component {
   constructor() {
@@ -50,6 +51,7 @@ class AddProject extends Component {
     return (
       <div className="project">
         <div className="container">
+          <ErrorMessage errors={errors} />
           <div className="row">
             <div className="col-md-8 m-auto">
               <h5 className="display-4 text-center">Create Project</h5>

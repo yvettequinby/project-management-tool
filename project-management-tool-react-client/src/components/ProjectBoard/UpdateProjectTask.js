@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import classnames from "classnames";
 import FieldErrors from "../Layout/FieldErrors";
 import { Link } from "react-router-dom";
+import ErrorMessage from "../Layout/ErrorMessage";
 
 class UpdateProjectTask extends Component {
   constructor(props) {
@@ -97,6 +98,7 @@ class UpdateProjectTask extends Component {
     return (
       <div className="add-PBI">
         <div className="container">
+          <ErrorMessage errors={errors} />
           <div className="row">
             <div className="col-md-8 m-auto">
               <Link

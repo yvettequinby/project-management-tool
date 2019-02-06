@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { createProjectTask } from "../../actions/projectBoardActions";
 import classnames from "classnames";
 import FieldErrors from "../Layout/FieldErrors";
+import ErrorMessage from "../Layout/ErrorMessage";
 
 class AddProjectTask extends Component {
   constructor(props) {
@@ -58,6 +59,7 @@ class AddProjectTask extends Component {
     return (
       <div className="add-PBI">
         <div className="container">
+          <ErrorMessage errors={errors} />
           <div className="row">
             <div className="col-md-8 m-auto">
               <Link

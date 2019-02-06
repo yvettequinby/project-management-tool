@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
 import FieldErrors from "../Layout/FieldErrors";
+import ErrorMessage from "../Layout/ErrorMessage";
 
 class UpdateProject extends Component {
   constructor() {
@@ -74,6 +75,7 @@ class UpdateProject extends Component {
     return (
       <div className="project">
         <div className="container">
+          <ErrorMessage errors={errors} />
           <div className="row">
             <div className="col-md-8 m-auto">
               <h5 className="display-4 text-center">Update Project</h5>

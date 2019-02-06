@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
 import FieldErrors from "../Layout/FieldErrors";
+import ErrorMessage from "../Layout/ErrorMessage";
 
 class Register extends Component {
   constructor() {
@@ -24,6 +25,12 @@ class Register extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.security.validToken) {
+      this.props.history.push("/dashboard");
     }
   }
 
@@ -48,6 +55,7 @@ class Register extends Component {
     return (
       <div className="register">
         <div className="container">
+          <ErrorMessage errors={errors} />
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Sign Up</h1>
@@ -116,11 +124,13 @@ class Register extends Component {
 }
 Register.propTypes = {
   createNewUser: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  security: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  errors: state.errors
+  errors: state.errors,
+  security: state.securityContainer
 });
 
 export default connect(

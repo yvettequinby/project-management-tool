@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import ProjectTaskList from "./ProjectTaskList";
 import ProjectBoardHeader from "./ProjectBoardHeader";
 import ErrorList from "../Layout/ErrorList";
+import ErrorMessage from "../Layout/ErrorMessage";
 
 class ProjectBoard extends Component {
   constructor() {
@@ -45,6 +46,7 @@ class ProjectBoard extends Component {
 
         <div className="container">
           <ErrorList errors={errors} />
+          <ErrorMessage errors={errors} />
           <div className="row">
             <div className="col-md-4">
               <div className="card text-center mb-2">
